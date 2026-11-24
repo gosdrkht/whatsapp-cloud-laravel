@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Cloud Laravel — Official Meta WhatsApp Business Cloud API SDK for Laravel 11, 12 &amp; 13</title>
+    <meta name="description" content="The simplest way to integrate Meta WhatsApp Business Cloud API into Laravel 11, 12 &amp; 13. Send text, PDF invoices, templates, OTPs, interactive buttons, webhooks, Laravel Notifications, and multi-tenant SaaS messaging.">
+    <meta name="keywords" content="Laravel WhatsApp Cloud API, WhatsApp Business API Laravel, PHP WhatsApp SDK, Laravel WhatsApp Notification Channel, Meta Cloud API Laravel, Send WhatsApp PDF Laravel, Sri Lanka Laravel Package, lankadev/whatsapp-cloud-laravel">
+    <meta name="author" content="LankaDev / Trishan Sri Viduranga">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://gosdrkht.github.io/whatsapp-cloud-laravel/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://gosdrkht.github.io/whatsapp-cloud-laravel/">
+    <meta property="og:title" content="WhatsApp Cloud Laravel — Meta WhatsApp Business Cloud API SDK for Laravel">
+    <meta property="og:description" content="Production-ready PHP 8.2+ &amp; Laravel 11–13 SDK for Meta's WhatsApp Business Cloud API. Messages, Templates, Webhooks, Notifications Channel, OTP, Media, and Multi-Tenancy.">
+    <meta property="og:site_name" content="WhatsApp Cloud Laravel">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="WhatsApp Cloud Laravel — Official Meta Cloud API SDK for Laravel">
+    <meta name="twitter:description" content="Send WhatsApp text, templates, OTPs, PDF invoices, interactive buttons, and handle verified webhooks in Laravel 11, 12 &amp; 13 in minutes.">
+
+    <!-- JSON-LD Structured Data: SoftwareSourceCode -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareSourceCode",
+      "name": "WhatsApp Cloud Laravel",
+      "alternateName": "lankadev/whatsapp-cloud-laravel",
+      "description": "The simplest way to integrate Meta WhatsApp Business Cloud API into Laravel applications. Supports text, media, templates, OTP, interactive buttons, webhooks, Laravel Notifications channel, queues, and multi-tenancy.",
+      "url": "https://gosdrkht.github.io/whatsapp-cloud-laravel/",
+      "codeRepository": "https://github.com/gosdrkht/whatsapp-cloud-laravel",
+      "programmingLanguage": "PHP",
+      "runtimePlatform": "Laravel 11, Laravel 12, Laravel 13, PHP 8.2+",
+      "license": "https://opensource.org/licenses/MIT",
+      "version": "1.2.1",
+      "author": {
+        "@type": "Organization",
+        "name": "LankaDev"
+      }
+    }
+    </script>
+
+    <!-- JSON-LD Structured Data: FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I send a WhatsApp message in Laravel using Meta Cloud API?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Install lankadev/whatsapp-cloud-laravel via Composer, configure your Meta WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID in .env, and call WhatsApp::to('94771234567')->sendText('Hello from Laravel!')."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it support Laravel's built-in Notification system?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The package automatically registers the 'whatsapp' notification channel so you can use $user->notify(new OrderConfirmationNotification($order)) with WhatsAppMessage."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How are Meta WhatsApp webhooks verified in Laravel?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The package automatically registers GET and POST /whatsapp/webhook routes, verifies X-Hub-Signature-256 HMAC signatures against the original raw request body using WHATSAPP_APP_SECRET, enforces cache-backed idempotency, and dispatches typed Laravel events."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which PHP and Laravel versions are supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "PHP 8.2, 8.3, and 8.4, and Laravel 11, 12, and 13 — verified continuously in GitHub Actions."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg: #0b1120;
+            --surface: #111827;
+            --surface-2: #1e293b;
+            --border: #1f2937;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --accent: #22c55e;
+            --accent-hover: #16a34a;
+            --accent-soft: rgba(34, 197, 94, 0.12);
+            --code-bg: #090e1a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+        header {
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: rgba(11, 17, 32, 0.88);
+            backdrop-filter: blur(12px);
+            z-index: 20;
+        }
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        .brand { font-weight: 700; font-size: 1.05rem; color: var(--text); display: flex; align-items: center; gap: 10px; }
+        .brand-badge {
+            background: var(--accent-soft);
+            color: var(--accent);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            font-size: 0.72rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+        .nav-links { display: flex; gap: 22px; font-size: 0.92rem; }
+        .nav-links a { color: var(--muted); }
+        .nav-links a:hover { color: var(--text); text-decoration: none; }
+        .hero {
+            padding: 76px 0 56px;
+            text-align: center;
+        }
+        .pill {
+            display: inline-block;
+            background: var(--accent-soft);
+            color: var(--accent);
+            border: 1px solid rgba(34, 197, 94, 0.28);
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: clamp(2.1rem, 5vw, 3.4rem);
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 18px;
+        }
+        .hero p {
+            max-width: 720px;
+            margin: 0 auto 28px;
+            color: var(--muted);
+            font-size: 1.12rem;
+        }
+        .install-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--code-bg);
+            border: 1px solid var(--surface-2);
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.95rem;
+            margin-bottom: 26px;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        .btn-copy {
+            background: var(--surface-2);
+            color: var(--text);
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 0.78rem;
+            cursor: pointer;
+        }
+        .btn-copy:hover { border-color: var(--accent); color: var(--accent); }
+        .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.15s ease;
+        }
+        .btn-primary { background: var(--accent); color: #052e16; }
+        .btn-primary:hover { background: var(--accent-hover); color: #fff; text-decoration: none; }
+        .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--surface-2); }
+        .btn-secondary:hover { border-color: var(--muted); text-decoration: none; }
+
+        section { padding: 54px 0; border-top: 1px solid var(--border); }
+        h2 { font-size: 1.75rem; letter-spacing: -0.02em; margin-bottom: 12px; }
+        .section-sub { color: var(--muted); margin-bottom: 28px; max-width: 680px; }
+
+        .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+        .tab-btn {
+            background: var(--surface);
+            color: var(--muted);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+        .tab-btn.active { background: var(--accent-soft); color: var(--accent); border-color: rgba(34, 197, 94, 0.4); }
+        .code-panel { display: none; position: relative; }
+        .code-panel.active { display: block; }
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--surface-2);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px;
+        }
+        .card h3 { font-size: 1.06rem; margin-bottom: 8px; color: var(--text); }
+        .card p { color: var(--muted); font-size: 0.92rem; }
+
+        .faq-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 12px;
+        }
+        .faq-item h3 { font-size: 1rem; margin-bottom: 6px; }
+        .faq-item p { color: var(--muted); font-size: 0.93rem; }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 36px 0;
+            color: var(--muted);
+            font-size: 0.88rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container nav">
+            <div class="brand">
+                WhatsApp Cloud Laravel
+                <span class="brand-badge">v1.2.1</span>
+            </div>
+            <nav class="nav-links" aria-label="Main navigation">
+                <a href="#examples">Examples</a>
+                <a href="#features">Features</a>
+                <a href="#faq">FAQ</a>
+                <a href="https://github.com/gosdrkht/whatsapp-cloud-laravel/blob/main/docs/meta-setup.md">Meta API Setup</a>
+                <a href="https://github.com/gosdrkht/whatsapp-cloud-laravel/blob/main/docs/sri-lanka-recipes.md">Recipes</a>
+                <a href="https://github.com/gosdrkht/whatsapp-cloud-laravel">GitHub</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero" style="border-top: none;">
+            <div class="container">
+                <div class="pill">Official Meta Cloud API • PHP 8.2+ • Laravel 11, 12 &amp; 13</div>
+                <h1>The simplest way to integrate<br>WhatsApp Cloud API into Laravel.</h1>
+                <p>
+                    Production-ready PHP &amp; Laravel SDK for Meta's WhatsApp Business Cloud API.
+                    Send text, PDF invoices, templates, OTPs, interactive buttons &amp; Flows, handle verified webhooks, and use Laravel Notifications out of the box.
+                </p>
+
+                <div class="install-box">
+                    <code id="install-cmd">composer require lankadev/whatsapp-cloud-laravel</code>
+                    <button class="btn-copy" onclick="copyText('install-cmd', this)">Copy</button>
+                </div>
+
+                <div class="cta-row">
+                    <a class="btn btn-primary" href="https://github.com/gosdrkht/whatsapp-cloud-laravel/blob/main/docs/meta-setup.md">Get Meta API Credentials →</a>
+                    <a class="btn btn-secondary" href="https://github.com/gosdrkht/whatsapp-cloud-laravel">View on GitHub</a>
+                    <a class="btn btn-secondary" href="https://packagist.org/packages/lankadev/whatsapp-cloud-laravel">Packagist</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="examples">
+            <div class="container">
+                <h2>Clean, Expressive Laravel API</h2>
+                <p class="section-sub">Install via Composer, configure your Meta Cloud API credentials, and start sending and receiving WhatsApp messages in minutes.</p>
+
+                <div class="tabs" role="tablist">
+                    <button class="tab-btn active" onclick="showTab('tab-text', this)">Send Messages</button>
+                    <button class="tab-btn" onclick="showTab('tab-notify', this)">Notifications Channel</button>
+                    <button class="tab-btn" onclick="showTab('tab-webhook', this)">Webhooks &amp; Events</button>
+                    <button class="tab-btn" onclick="showTab('tab-saas', this)">Multi-Tenant &amp; Bulk</button>
+                    <button class="tab-btn" onclick="showTab('tab-test', this)">Testing Fake</button>
+                </div>
+
+                <div id="tab-text" class="code-panel active">
+<pre>use LankaDev\WhatsApp\Facades\WhatsApp;
+
+// Simple text message (local numbers auto-normalize when WHATSAPP_DEFAULT_COUNTRY_CODE=94)
+WhatsApp::to('0771234567')-&gt;sendText('Hello from Sri Lanka!');
+
+// Template message
+WhatsApp::to('94771234567')-&gt;sendTemplate('order_confirmation', 'en', [
+    'customer' =&gt; 'Kamal',
+    'order_id' =&gt; 'ORD-1001',
+]);
+
+// Send a PDF invoice
+WhatsApp::to('94771234567')-&gt;sendDocument(
+    'https://example.com/invoice.pdf',
+    'Invoice-1001.pdf'
+);
+
+// One-line OTP authentication template
+WhatsApp::to('0771234567')-&gt;sendOtp('auth_otp_login', '482910');</pre>
+                </div>
+
+                <div id="tab-notify" class="code-panel">
+<pre>use Illuminate\Notifications\Notification;
+use LankaDev\WhatsApp\Notifications\WhatsAppMessage;
+
+class OrderConfirmationNotification extends Notification
+{
+    public function via(object $notifiable): array
+    {
+        return ['whatsapp'];
+    }
+
+    public function toWhatsApp(object $notifiable): WhatsAppMessage
+    {
+        return WhatsAppMessage::template('order_confirmation', 'en', [
+            'customer' =&gt; $notifiable-&gt;name,
+            'order_id' =&gt; 'ORD-1001',
+        ]);
+    }
+}
+
+// Dispatch using Laravel's native notification system:
+$user-&gt;notify(new OrderConfirmationNotification($order));</pre>
+                </div>
+
+                <div id="tab-webhook" class="code-panel">
+<pre>use Illuminate\Support\Facades\Event;
+use LankaDev\WhatsApp\Events\MessageReceived;
+use LankaDev\WhatsApp\Events\MessageFailed;
+
+// GET &amp; POST /whatsapp/webhook are auto-registered with raw-body
+// X-Hub-Signature-256 verification and cache-backed idempotency.
+
+Event::listen(MessageReceived::class, function (MessageReceived $event): void {
+    $from = $event-&gt;message-&gt;from;
+    $text = $event-&gt;message-&gt;text();
+});
+
+Event::listen(MessageFailed::class, function (MessageFailed $event): void {
+    // Trigger local SMS fallback (Notify.lk / Text.lk) if WhatsApp fails
+    logger()-&gt;warning('Delivery failed', [
+        'error' =&gt; $event-&gt;status-&gt;firstErrorMessage(),
+    ]);
+});</pre>
+                </div>
+
+                <div id="tab-saas" class="code-panel">
+<pre>use LankaDev\WhatsApp\Facades\WhatsApp;
+use LankaDev\WhatsApp\Messages\MessagePayloadBuilder;
+
+// Multi-tenant SaaS (per-branch POS / per-clinic HMS)
+WhatsApp::forTenant($clinic)
+    -&gt;to('0771234567')
+    -&gt;sendText('Your lab report is ready for pickup.');
+
+// Rate-paced bulk broadcast via Laravel Bus Batches
+WhatsApp::broadcast(
+    recipients: $subscribers-&gt;pluck('phone'),
+    payloadFactory: fn (string $to) =&gt; MessagePayloadBuilder::template($to, 'promo_offer', 'en'),
+    batchName: 'seasonal-promo',
+    queue: 'whatsapp-bulk',
+    rateLimitPerSecond: 20,
+)-&gt;dispatch();</pre>
+                </div>
+
+                <div id="tab-test" class="code-panel">
+<pre>use LankaDev\WhatsApp\Facades\WhatsApp;
+
+it('sends an order confirmation via WhatsApp', function (): void {
+    $fake = WhatsApp::fake();
+
+    WhatsApp::to('94771234567')-&gt;sendTemplate('order_confirmation', 'en', [
+        'customer' =&gt; 'Kamal',
+    ]);
+
+    $fake-&gt;assertSentCount(1);
+    $fake-&gt;assertSentTemplate('94771234567', 'order_confirmation', 'en');
+});</pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="features">
+            <div class="container">
+                <h2>Built for Production Systems</h2>
+                <p class="section-sub">Engineered for POS platforms, ERP systems, hospital management systems, e-commerce stores, and multi-tenant SaaS products.</p>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>Complete Messaging Engine</h3>
+                        <p>Text, image, video, document, audio, sticker, location, contact cards, reactions, interactive reply buttons, lists, CTA URLs, WhatsApp Flows, OTPs, and templates.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Secure Webhooks &amp; Idempotency</h3>
+                        <p>Verifies <code>X-Hub-Signature-256</code> against the original raw request body with <code>hash_equals()</code> and prevents duplicate processing via atomic cache keys.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Laravel Notifications &amp; Queues</h3>
+                        <p>Native <code>whatsapp</code> notification channel, <code>-&gt;queue()</code> chaining, rate-paced <code>WhatsApp::broadcast()</code> batches, and Artisan scaffolding.</p>
+                    </div>
+                    <div class="card">
+                        <h3>24h Service Window &amp; DB Logs</h3>
+                        <p>Automatically tracks Meta's 24-hour customer service window and offers an opt-in <code>whatsapp_messages</code> migration logging delivery, read, and pricing categories.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Sri Lankan Developer Tools</h3>
+                        <p>Local phone normalization (<code>0771234567</code> → <code>94771234567</code>), <code>SriLankanMobileNumber</code> validation rule, <code>LKR</code> &amp; <code>Asia/Colombo</code> helpers, and tri-lingual recipes.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Zero-Network Testing &amp; CI</h3>
+                        <p>First-class <code>WhatsApp::fake()</code> assertions, signed webhook factories, PHPStan Level 6, Laravel Pint, and automated <code>composer audit</code> security checks.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq">
+            <div class="container">
+                <h2>Frequently Asked Questions</h2>
+                <div class="faq-item">
+                    <h3>How do I get Meta WhatsApp Business Cloud API credentials?</h3>
+                    <p>Create a free Business app at <a href="https://developers.facebook.com/">Meta for Developers</a>, add the WhatsApp product, and generate a Permanent System User token. Follow our complete <a href="https://github.com/gosdrkht/whatsapp-cloud-laravel/blob/main/docs/meta-setup.md">Meta API Setup Guide</a>.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Which Laravel and PHP versions are supported?</h3>
+                    <p>PHP 8.2, 8.3, and 8.4, and Laravel 11, 12, and 13 — tested on every push in GitHub Actions.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Can I use the client outside of Laravel?</h3>
+                    <p>Yes! Instantiate <code>LankaDev\WhatsApp\Client\WhatsAppClient</code> directly with <code>WhatsAppConfig</code> in any framework-independent PHP 8.2+ project.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>MIT Licensed • Open-source community project by <strong>LankaDev / Leading Edge Solutions</strong>. Not an official Meta product or endorsement.</p>
+            <p style="margin-top: 8px;">
+                <a href="https://github.com/gosdrkht/whatsapp-cloud-laravel">GitHub</a> ·
+                <a href="https://packagist.org/packages/lankadev/whatsapp-cloud-laravel">Packagist</a> ·
+                <a href="https://github.com/gosdrkht/whatsapp-cloud-laravel/blob/main/docs/meta-setup.md">Meta Setup Guide</a> ·
+                <a href="https://github.com/gosdrkht/whatsapp-cloud-laravel/blob/main/docs/sri-lanka-recipes.md">Sri Lankan Recipes</a> ·
+                <a href="https://github.com/gosdrkht/whatsapp-cloud-laravel/blob/main/CHANGELOG.md">Changelog</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function showTab(id, btn) {
+            document.querySelectorAll('.code-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+        }
+        function copyText(id, btn) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const orig = btn.innerText;
+                btn.innerText = 'Copied!';
+                setTimeout(() => btn.innerText = orig, 1500);
+            });
+        }
+    </script>
+</body>
+</html>

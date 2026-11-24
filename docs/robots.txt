@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gosdrkht.github.io/whatsapp-cloud-laravel/sitemap.xml
