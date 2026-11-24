@@ -52,6 +52,8 @@ php artisan vendor:publish --tag="whatsapp-config"
 
 ## Configuration
 
+> **New to Meta's WhatsApp Cloud API?** Follow the step-by-step [Meta API Setup Guide](docs/meta-setup.md) to get your Access Token, Phone Number ID, WABA ID, App Secret, and Webhook configured in minutes.
+
 Add your Meta WhatsApp Business Cloud API credentials to `.env`:
 
 ```env
