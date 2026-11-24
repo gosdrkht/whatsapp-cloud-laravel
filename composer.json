@@ -1,0 +1,76 @@
+{
+    "name": "lankadev/whatsapp-cloud-laravel",
+    "description": "The simplest way to integrate WhatsApp Business Cloud API into Laravel applications.",
+    "keywords": [
+        "laravel",
+        "whatsapp",
+        "whatsapp-cloud-api",
+        "whatsapp-business",
+        "meta",
+        "sdk",
+        "notifications",
+        "webhooks",
+        "lankadev",
+        "sri-lanka"
+    ],
+    "homepage": "https://github.com/gosdrkht/whatsapp-cloud-laravel",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Trishan Sri Viduranga",
+            "homepage": "https://github.com/gosdrkht"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.8",
+        "illuminate/bus": "^11.0|^12.0|^13.0",
+        "illuminate/cache": "^11.0|^12.0|^13.0",
+        "illuminate/console": "^11.0|^12.0|^13.0",
+        "illuminate/contracts": "^11.0|^12.0|^13.0",
+        "illuminate/events": "^11.0|^12.0|^13.0",
+        "illuminate/http": "^11.0|^12.0|^13.0",
+        "illuminate/notifications": "^11.0|^12.0|^13.0",
+        "illuminate/queue": "^11.0|^12.0|^13.0",
+        "illuminate/routing": "^11.0|^12.0|^13.0",
+        "illuminate/support": "^11.0|^12.0|^13.0",
+        "psr/log": "^2.0|^3.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "pestphp/pest": "^3.0|^4.0",
+        "pestphp/pest-plugin-laravel": "^3.0|^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "LankaDev\\WhatsApp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LankaDev\\WhatsApp\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LankaDev\\WhatsApp\\WhatsAppServiceProvider"
+            ],
+            "aliases": {
+                "WhatsApp": "LankaDev\\WhatsApp\\Facades\\WhatsApp"
+            }
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
