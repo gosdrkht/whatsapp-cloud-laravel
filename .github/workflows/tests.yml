@@ -85,3 +85,6 @@ jobs:
 
       - name: Run PHPStan static analysis
         run: composer analyse
+
+      - name: Run Composer security audit
+        run: composer audit

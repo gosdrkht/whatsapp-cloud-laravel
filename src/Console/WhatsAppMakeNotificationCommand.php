@@ -27,6 +27,15 @@ class WhatsAppMakeNotificationCommand extends Command
         $rawName = trim((string) $this->argument('name'));
         $className = str_replace(['/', '\\'], '\\', $rawName);
         $segments = explode('\\', $className);
+
+        foreach ($segments as $segment) {
+            if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $segment) !== 1) {
+                $this->error("Invalid notification class name [{$rawName}].");
+
+                return self::FAILURE;
+            }
+        }
+
         $shortName = array_pop($segments);
         $subNamespace = $segments !== [] ? '\\' . implode('\\', $segments) : '';
         $relativePath = implode(DIRECTORY_SEPARATOR, array_merge($segments, ["{$shortName}.php"]));

@@ -35,7 +35,10 @@ class WebhookController
             && hash_equals($expectedToken, $token)
             && is_string($challenge)
         ) {
-            return response($challenge, 200, ['Content-Type' => 'text/plain']);
+            return response($challenge, 200, [
+                'Content-Type' => 'text/plain; charset=UTF-8',
+                'X-Content-Type-Options' => 'nosniff',
+            ]);
         }
 
         return response('Forbidden', 403);

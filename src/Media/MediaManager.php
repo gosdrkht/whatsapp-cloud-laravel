@@ -94,6 +94,10 @@ class MediaManager
             throw new MediaException("Meta did not return a download URL for media ID '{$mediaId}'.", 404);
         }
 
+        if (! str_starts_with(strtolower($media->url), 'https://')) {
+            throw new MediaException("Refusing to download media over non-HTTPS URL for media ID '{$mediaId}'.", 400);
+        }
+
         $binaryResponse = $this->client->downloadBinary($media->url);
         $bytes = $binaryResponse->body();
 
