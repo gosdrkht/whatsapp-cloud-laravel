@@ -194,7 +194,6 @@ class WebhookProcessor
     }
 
     /**
-     * @param  mixed  $contacts
      * @return array<string, array<string, mixed>>
      */
     private function indexContacts(mixed $contacts): array

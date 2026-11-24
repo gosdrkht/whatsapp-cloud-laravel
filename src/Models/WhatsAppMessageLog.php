@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LankaDev\WhatsApp\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Opt-in Eloquent model for persisting outbound/inbound WhatsApp message logs,
@@ -23,9 +24,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property array<string, mixed>|null $payload
  * @property string|null $error_code
  * @property string|null $error_message
- * @property \Illuminate\Support\Carbon|null $delivered_at
- * @property \Illuminate\Support\Carbon|null $read_at
- * @property \Illuminate\Support\Carbon|null $failed_at
+ * @property Carbon|null $delivered_at
+ * @property Carbon|null $read_at
+ * @property Carbon|null $failed_at
  */
 class WhatsAppMessageLog extends Model
 {

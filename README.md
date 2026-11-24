@@ -320,6 +320,20 @@ $whatsapp->to('94771234567')->sendText('Hello from standalone PHP!');
 
 ---
 
+## Advanced Features & Recipes
+
+- **Local Phone Number Normalization**: Set `WHATSAPP_DEFAULT_COUNTRY_CODE=94` to accept local numbers like `0771234567`.
+- **OTP Authentication Helper**: `WhatsApp::to('0771234567')->sendOtp('login_otp', '482910')`.
+- **Interactive CTA URL & WhatsApp Flows**: `sendInteractiveCtaUrl(...)`, `sendFlow(...)`, `sendSticker(...)`, and `WhatsApp::sendTypingIndicator($messageId)`.
+- **24-Hour Customer Service Window**: Check `WhatsApp::isWithinServiceWindow('94771234567')` (automatically updated on incoming webhooks).
+- **Opt-In Database Logging**: Publish migrations with `php artisan vendor:publish --tag="whatsapp-migrations"` and set `WHATSAPP_DATABASE_LOGGING=true` to persist outbound/inbound messages, delivery/read/failed timestamps, and Meta pricing categories in `whatsapp_messages`.
+- **Multi-Tenant SaaS**: Use `WhatsApp::using($credentials)` or bind `TenantCredentialResolver` and call `WhatsApp::forTenant($tenant)`.
+- **Rate-Paced Bulk Broadcasts**: Use `WhatsApp::broadcast($recipients, $payloadFactory, rateLimitPerSecond: 20)->dispatch()`.
+
+See [docs/recipes.md](docs/recipes.md) for copy-pasteable POS, Hospital, OTP, PayHere, Multi-Tenant, and Bulk Broadcast recipes.
+
+---
+
 ## Security & Meta Compliance Notes
 
 - **Token Protection**: Access tokens and app secrets are redacted from `__debugInfo()`, `toSafeArray()`, CLI output, and logs.
@@ -329,10 +343,10 @@ $whatsapp->to('94771234567')->sendText('Hello from standalone PHP!');
 
 ---
 
-## Roadmap
+## Contributing & Changelog
 
-- **v1.0–v1.3 (Included)**: Text, media, interactive buttons & lists, contact cards, templates, media management, webhooks with signature verification & idempotency, Laravel Notifications channel, queues, events, Artisan commands, and `WhatsApp::fake()`.
-- **v2.0**: Optional multi-tenant WABA/phone-number credential resolvers, analytics hooks, and WhatsApp Flows support.
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for local development, Pint formatting, and PHPStan guidelines.
+- See [CHANGELOG.md](CHANGELOG.md) for release history and [SECURITY.md](SECURITY.md) for vulnerability reporting.
 
 ---
 
