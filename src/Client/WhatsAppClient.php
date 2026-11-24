@@ -61,6 +61,20 @@ class WhatsAppClient
         ], $phoneNumberId);
     }
 
+    /**
+     * Mark an incoming message as read and display a typing indicator to the recipient.
+     */
+    public function sendTypingIndicator(string $messageId, ?string $phoneNumberId = null): ApiResponse
+    {
+        return $this->sendMessage([
+            'status' => 'read',
+            'message_id' => $messageId,
+            'typing_indicator' => [
+                'type' => 'text',
+            ],
+        ], $phoneNumberId);
+    }
+
     public function get(string $url, array $query = []): ApiResponse
     {
         return $this->requestWithRetry(

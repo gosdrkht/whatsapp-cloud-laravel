@@ -96,6 +96,13 @@ final class WhatsAppMessage
         );
     }
 
+    public static function sticker(string $urlOrMediaId): self
+    {
+        return new self(
+            static fn (string $to, ?string $replyTo): array => MessagePayloadBuilder::sticker($to, $urlOrMediaId, $replyTo),
+        );
+    }
+
     public static function location(float $latitude, float $longitude, ?string $name = null, ?string $address = null): self
     {
         return new self(

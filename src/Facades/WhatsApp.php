@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace LankaDev\WhatsApp\Facades;
 
+use Illuminate\Bus\PendingBatch;
 use Illuminate\Support\Facades\Facade;
 use LankaDev\WhatsApp\Client\ApiResponse;
 use LankaDev\WhatsApp\Client\WhatsAppClient;
+use LankaDev\WhatsApp\Client\WhatsAppConfig;
 use LankaDev\WhatsApp\Media\MediaManager;
 use LankaDev\WhatsApp\PendingMessage;
 use LankaDev\WhatsApp\Support\ConversationWindow;
@@ -15,9 +17,13 @@ use LankaDev\WhatsApp\Testing\WhatsAppFake;
 use LankaDev\WhatsApp\WhatsAppManager;
 
 /**
+ * @method static WhatsAppManager using(WhatsAppConfig|array $credentials)
+ * @method static WhatsAppManager forTenant(mixed $tenant)
  * @method static PendingMessage to(string $recipient)
+ * @method static PendingBatch broadcast(iterable $recipients, callable $payloadFactory, ?string $batchName = null, ?string $queue = null, ?string $connection = null, int $rateLimitPerSecond = 0, ?string $phoneNumberId = null)
  * @method static ApiResponse sendPayload(array $payload, ?string $phoneNumberId = null)
  * @method static ApiResponse markAsRead(string $messageId, ?string $phoneNumberId = null)
+ * @method static ApiResponse sendTypingIndicator(string $messageId, ?string $phoneNumberId = null)
  * @method static TemplateManager templates()
  * @method static MediaManager media()
  * @method static ConversationWindow|null conversationWindow()

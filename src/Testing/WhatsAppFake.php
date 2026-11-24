@@ -22,6 +22,9 @@ class WhatsAppFake extends WhatsAppManager
     /** @var array<int, string> */
     private array $markedAsRead = [];
 
+    /** @var array<int, string> */
+    private array $typingIndicators = [];
+
     /** @var array<int, ApiResponse> */
     private array $queuedResponses = [];
 
@@ -76,6 +79,13 @@ class WhatsAppFake extends WhatsAppManager
     public function markAsRead(string $messageId, ?string $phoneNumberId = null): ApiResponse
     {
         $this->markedAsRead[] = $messageId;
+
+        return ApiResponse::fake(['success' => true]);
+    }
+
+    public function sendTypingIndicator(string $messageId, ?string $phoneNumberId = null): ApiResponse
+    {
+        $this->typingIndicators[] = $messageId;
 
         return ApiResponse::fake(['success' => true]);
     }
@@ -196,6 +206,15 @@ class WhatsAppFake extends WhatsAppManager
             $messageId,
             $this->markedAsRead,
             "Expected WhatsApp message [{$messageId}] to be marked as read.",
+        );
+    }
+
+    public function assertSentTypingIndicator(string $messageId): void
+    {
+        Assert::assertContains(
+            $messageId,
+            $this->typingIndicators,
+            "Expected typing indicator to be sent for WhatsApp message [{$messageId}].",
         );
     }
 }

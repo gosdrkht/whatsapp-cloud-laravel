@@ -73,6 +73,13 @@ final class MessagePayloadBuilder
         ], $replyToMessageId);
     }
 
+    public static function sticker(string $to, string $urlOrMediaId, ?string $replyToMessageId = null): array
+    {
+        return self::base($to, 'sticker', [
+            'sticker' => self::mediaReference($urlOrMediaId),
+        ], $replyToMessageId);
+    }
+
     public static function location(
         string $to,
         float $latitude,

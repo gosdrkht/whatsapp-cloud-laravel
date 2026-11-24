@@ -100,6 +100,13 @@ class PendingMessage
         );
     }
 
+    public function sendSticker(string $urlOrMediaId): ApiResponse
+    {
+        return $this->dispatch(
+            MessagePayloadBuilder::sticker($this->recipient, $urlOrMediaId, $this->replyToMessageId),
+        );
+    }
+
     public function sendLocation(float $latitude, float $longitude, ?string $name = null, ?string $address = null): ApiResponse
     {
         return $this->dispatch(

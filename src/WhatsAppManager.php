@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace LankaDev\WhatsApp;
 
+use Illuminate\Bus\PendingBatch;
 use LankaDev\WhatsApp\Client\ApiResponse;
 use LankaDev\WhatsApp\Client\WhatsAppClient;
+use LankaDev\WhatsApp\Client\WhatsAppConfig;
+use LankaDev\WhatsApp\Contracts\TenantCredentialResolver;
+use LankaDev\WhatsApp\Exceptions\ValidationException;
 use LankaDev\WhatsApp\Media\MediaManager;
 use LankaDev\WhatsApp\Models\WhatsAppMessageLog;
+use LankaDev\WhatsApp\Support\BroadcastBatch;
 use LankaDev\WhatsApp\Support\ConversationWindow;
 use LankaDev\WhatsApp\Templates\TemplateManager;
 
@@ -23,7 +28,50 @@ class WhatsAppManager
     public function __construct(
         private readonly WhatsAppClient $client,
         private readonly ?ConversationWindow $conversationWindow = null,
+        private readonly ?TenantCredentialResolver $tenantResolver = null,
     ) {}
+
+    /**
+     * Create a tenant-scoped WhatsAppManager using custom credentials without mutating the default singleton.
+     *
+     * @param  WhatsAppConfig|array<string, mixed>  $credentials
+     */
+    public function using(WhatsAppConfig|array $credentials): self
+    {
+        $config = $credentials instanceof WhatsAppConfig
+            ? $credentials
+            : WhatsAppConfig::fromArray(array_merge(
+                function_exists('config') ? (array) config('whatsapp', []) : [],
+                $credentials,
+            ));
+
+        return new self(
+            $this->client->withConfig($config),
+            $this->conversationWindow,
+            $this->tenantResolver,
+        );
+    }
+
+    /**
+     * Resolve credentials for a tenant using the registered TenantCredentialResolver.
+     */
+    public function forTenant(mixed $tenant): self
+    {
+        $resolver = $this->tenantResolver;
+
+        if ($resolver === null && function_exists('app') && app()->bound(TenantCredentialResolver::class)) {
+            $resolver = app()->make(TenantCredentialResolver::class);
+        }
+
+        if ($resolver === null) {
+            throw new ValidationException(
+                'No TenantCredentialResolver is bound in the service container. Bind an implementation of ' . TenantCredentialResolver::class . ' to use forTenant().',
+                500,
+            );
+        }
+
+        return $this->using($resolver->resolve($tenant));
+    }
 
     /**
      * Begin building a message for a specific recipient phone number.
@@ -31,6 +79,32 @@ class WhatsAppManager
     public function to(string $recipient): PendingMessage
     {
         return new PendingMessage($this, $recipient);
+    }
+
+    /**
+     * Create a rate-paced Laravel Bus Batch for bulk messaging.
+     *
+     * @param  iterable<int, string>  $recipients
+     * @param  callable(string): array<string, mixed>  $payloadFactory
+     */
+    public function broadcast(
+        iterable $recipients,
+        callable $payloadFactory,
+        ?string $batchName = null,
+        ?string $queue = null,
+        ?string $connection = null,
+        int $rateLimitPerSecond = 0,
+        ?string $phoneNumberId = null,
+    ): PendingBatch {
+        return BroadcastBatch::create(
+            recipients: $recipients,
+            payloadFactory: $payloadFactory,
+            batchName: $batchName,
+            queue: $queue,
+            connection: $connection,
+            rateLimitPerSecond: $rateLimitPerSecond,
+            phoneNumberId: $phoneNumberId ?: $this->client->config()->phoneNumberId,
+        );
     }
 
     /**
@@ -53,6 +127,14 @@ class WhatsAppManager
     public function markAsRead(string $messageId, ?string $phoneNumberId = null): ApiResponse
     {
         return $this->client->markAsRead($messageId, $phoneNumberId);
+    }
+
+    /**
+     * Mark an incoming message as read and display a typing indicator to the recipient.
+     */
+    public function sendTypingIndicator(string $messageId, ?string $phoneNumberId = null): ApiResponse
+    {
+        return $this->client->sendTypingIndicator($messageId, $phoneNumberId);
     }
 
     /**
