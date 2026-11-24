@@ -19,6 +19,7 @@ use LankaDev\WhatsApp\Console\WhatsAppTemplatesCommand;
 use LankaDev\WhatsApp\Console\WhatsAppTestCommand;
 use LankaDev\WhatsApp\Console\WhatsAppWebhookCommand;
 use LankaDev\WhatsApp\Notifications\WhatsAppChannel;
+use LankaDev\WhatsApp\Support\ConversationWindow;
 use LankaDev\WhatsApp\Webhooks\VerifyWebhookSignature;
 use LankaDev\WhatsApp\Webhooks\WebhookController;
 use LankaDev\WhatsApp\Webhooks\WebhookIdempotencyStore;
@@ -56,8 +57,15 @@ class WhatsAppServiceProvider extends ServiceProvider
             );
         });
 
+        $this->app->singleton(ConversationWindow::class, function ($app): ConversationWindow {
+            return new ConversationWindow($app->make(CacheFactory::class));
+        });
+
         $this->app->singleton(WhatsAppManager::class, function ($app): WhatsAppManager {
-            return new WhatsAppManager($app->make(WhatsAppClient::class));
+            return new WhatsAppManager(
+                $app->make(WhatsAppClient::class),
+                $app->make(ConversationWindow::class),
+            );
         });
 
         $this->app->alias(WhatsAppManager::class, 'whatsapp');
@@ -70,6 +78,7 @@ class WhatsAppServiceProvider extends ServiceProvider
             return new WebhookProcessor(
                 $app->make(Dispatcher::class),
                 $app->make(WebhookIdempotencyStore::class),
+                $app->make(ConversationWindow::class),
             );
         });
 
@@ -84,6 +93,10 @@ class WhatsAppServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__ . '/../config/whatsapp.php' => config_path('whatsapp.php'),
             ], 'whatsapp-config');
+
+            $this->publishes([
+                __DIR__ . '/../database/migrations/create_whatsapp_messages_table.php.stub' => database_path('migrations/' . date('Y_m_d_His') . '_create_whatsapp_messages_table.php'),
+            ], 'whatsapp-migrations');
 
             $this->commands([
                 WhatsAppTestCommand::class,

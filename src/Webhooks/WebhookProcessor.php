@@ -5,22 +5,26 @@ declare(strict_types=1);
 namespace LankaDev\WhatsApp\Webhooks;
 
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Support\Carbon;
 use LankaDev\WhatsApp\Events\MessageDelivered;
 use LankaDev\WhatsApp\Events\MessageFailed;
 use LankaDev\WhatsApp\Events\MessageRead;
 use LankaDev\WhatsApp\Events\MessageReceived;
 use LankaDev\WhatsApp\Events\MessageStatusUpdated;
 use LankaDev\WhatsApp\Events\WebhookReceived;
+use LankaDev\WhatsApp\Models\WhatsAppMessageLog;
+use LankaDev\WhatsApp\Support\ConversationWindow;
 
 /**
  * Parses incoming Meta WhatsApp webhook payloads, enforces idempotency,
- * and dispatches typed Laravel events.
+ * updates the 24-hour customer service window, and dispatches typed Laravel events.
  */
 class WebhookProcessor
 {
     public function __construct(
         private readonly Dispatcher $events,
         private readonly WebhookIdempotencyStore $idempotency,
+        private readonly ?ConversationWindow $conversationWindow = null,
     ) {}
 
     /**
@@ -84,6 +88,15 @@ class WebhookProcessor
                         $contactsByWaId[$from] ?? null,
                     );
 
+                    if ($from !== '') {
+                        $this->conversationWindow?->recordInbound(
+                            $from,
+                            $message->timestamp > 0 ? $message->timestamp : null,
+                        );
+                    }
+
+                    $this->logInboundMessage($message);
+
                     $this->events->dispatch(new MessageReceived($message));
                     $messagesDispatched++;
                 }
@@ -105,6 +118,8 @@ class WebhookProcessor
 
                     $status = MessageStatus::fromWebhook($rawStatus, $metadata);
 
+                    $this->logStatusUpdate($status);
+
                     $this->events->dispatch(new MessageStatusUpdated($status));
 
                     match ($status->status) {
@@ -124,6 +139,58 @@ class WebhookProcessor
             'statuses_dispatched' => $statusesDispatched,
             'duplicates_skipped' => $duplicatesSkipped,
         ];
+    }
+
+    private function logInboundMessage(IncomingMessage $message): void
+    {
+        if (! config('whatsapp.database_logging.enabled', false)) {
+            return;
+        }
+
+        WhatsAppMessageLog::query()->create([
+            'wamid' => $message->id !== '' ? $message->id : null,
+            'direction' => 'inbound',
+            'phone_number' => $message->from,
+            'phone_number_id' => $message->phoneNumberId,
+            'type' => $message->type,
+            'status' => 'received',
+            'payload' => $message->raw,
+        ]);
+    }
+
+    private function logStatusUpdate(MessageStatus $status): void
+    {
+        if (! config('whatsapp.database_logging.enabled', false) || $status->id === '') {
+            return;
+        }
+
+        $log = WhatsAppMessageLog::query()->where('wamid', $status->id)->first();
+        if ($log === null) {
+            return;
+        }
+
+        $updates = [
+            'status' => $status->status,
+            'billable' => $status->isBillable(),
+        ];
+
+        if ($status->pricingCategory() !== null) {
+            $updates['pricing_category'] = $status->pricingCategory();
+        }
+
+        $eventTime = $status->timestamp > 0 ? Carbon::createFromTimestamp($status->timestamp) : now();
+
+        if ($status->status === 'delivered') {
+            $updates['delivered_at'] = $eventTime;
+        } elseif ($status->status === 'read') {
+            $updates['read_at'] = $eventTime;
+        } elseif ($status->status === 'failed') {
+            $updates['failed_at'] = $eventTime;
+            $updates['error_code'] = $status->firstErrorCode() !== null ? (string) $status->firstErrorCode() : null;
+            $updates['error_message'] = $status->firstErrorMessage();
+        }
+
+        $log->update($updates);
     }
 
     /**

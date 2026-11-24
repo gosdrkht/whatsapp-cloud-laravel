@@ -106,4 +106,49 @@ return [
         'channel' => env('WHATSAPP_LOG_CHANNEL'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default Country Calling Code
+    |--------------------------------------------------------------------------
+    |
+    | Optional default country code (e.g. '94' for Sri Lanka) used to normalize
+    | local phone numbers such as '0771234567' into E.164 format '94771234567'.
+    |
+    */
+
+    'default_country_code' => env('WHATSAPP_DEFAULT_COUNTRY_CODE', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | 24-Hour Customer Service Window Tracking
+    |--------------------------------------------------------------------------
+    |
+    | Tracks the last incoming message timestamp per phone number so your app
+    | can check whether free-form messages are allowed under Meta's 24-hour
+    | customer service window policy.
+    |
+    */
+
+    'service_window' => [
+        'enabled' => env('WHATSAPP_SERVICE_WINDOW_TRACKING', true),
+        'store' => env('WHATSAPP_SERVICE_WINDOW_CACHE_STORE'),
+        'prefix' => 'whatsapp_window:',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Opt-In Database Message Logging
+    |--------------------------------------------------------------------------
+    |
+    | When enabled (after publishing and running the package migration),
+    | outbound messages, inbound messages, and delivery/pricing statuses are
+    | persisted to the whatsapp_messages table.
+    |
+    */
+
+    'database_logging' => [
+        'enabled' => env('WHATSAPP_DATABASE_LOGGING', false),
+        'table' => env('WHATSAPP_DATABASE_TABLE', 'whatsapp_messages'),
+    ],
+
 ];

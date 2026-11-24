@@ -191,6 +191,83 @@ class PendingMessage
     }
 
     /**
+     * Send a Meta AUTHENTICATION OTP template message.
+     */
+    public function sendOtp(
+        string $templateName,
+        string $code,
+        string $language = 'en',
+        bool $includeCopyButton = true,
+    ): ApiResponse {
+        return $this->dispatch(
+            MessagePayloadBuilder::otp(
+                $this->recipient,
+                $templateName,
+                $code,
+                $language,
+                $includeCopyButton,
+                $this->replyToMessageId,
+            ),
+        );
+    }
+
+    /**
+     * Send an interactive Call-To-Action URL button message.
+     */
+    public function sendInteractiveCtaUrl(
+        string $body,
+        string $displayText,
+        string $url,
+        ?string $header = null,
+        ?string $footer = null,
+    ): ApiResponse {
+        return $this->dispatch(
+            MessagePayloadBuilder::interactiveCtaUrl(
+                $this->recipient,
+                $body,
+                $displayText,
+                $url,
+                $header,
+                $footer,
+                $this->replyToMessageId,
+            ),
+        );
+    }
+
+    /**
+     * Send a WhatsApp Flows interactive message.
+     *
+     * @param  array<string, mixed>|null  $flowActionPayload
+     */
+    public function sendFlow(
+        string $body,
+        string $flowId,
+        string $flowCta,
+        ?string $flowToken = null,
+        string $flowAction = 'navigate',
+        ?array $flowActionPayload = null,
+        string $mode = 'published',
+        ?string $header = null,
+        ?string $footer = null,
+    ): ApiResponse {
+        return $this->dispatch(
+            MessagePayloadBuilder::flow(
+                $this->recipient,
+                $body,
+                $flowId,
+                $flowCta,
+                $flowToken,
+                $flowAction,
+                $flowActionPayload,
+                $mode,
+                $header,
+                $footer,
+                $this->replyToMessageId,
+            ),
+        );
+    }
+
+    /**
      * Send a raw Meta Cloud API message payload.
      *
      * @param  array<string, mixed>  $payload

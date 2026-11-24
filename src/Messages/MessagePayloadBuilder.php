@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LankaDev\WhatsApp\Messages;
 
 use LankaDev\WhatsApp\Exceptions\ValidationException;
+use LankaDev\WhatsApp\Support\PhoneNumberNormalizer;
 use LankaDev\WhatsApp\Templates\TemplateComponent;
 use LankaDev\WhatsApp\Templates\TemplateValidator;
 
@@ -13,18 +14,9 @@ use LankaDev\WhatsApp\Templates\TemplateValidator;
  */
 final class MessagePayloadBuilder
 {
-    public static function normalizeRecipient(string $to): string
+    public static function normalizeRecipient(string $to, ?string $defaultCountryCode = null): string
     {
-        $normalized = preg_replace('/[^0-9]/', '', $to) ?? '';
-
-        if ($normalized === '' || strlen($normalized) < 7 || strlen($normalized) > 15) {
-            throw new ValidationException(
-                "Invalid recipient phone number '{$to}'. Provide an E.164 phone number (e.g. '94771234567').",
-                422,
-            );
-        }
-
-        return $normalized;
+        return PhoneNumberNormalizer::normalize($to, $defaultCountryCode);
     }
 
     public static function text(string $to, string $body, bool $previewUrl = false, ?string $replyToMessageId = null): array
@@ -294,6 +286,137 @@ final class MessagePayloadBuilder
         }
 
         return self::base($to, 'template', ['template' => $template], $replyToMessageId);
+    }
+
+    /**
+     * Build a Meta AUTHENTICATION OTP template payload (body code + optional copy-code button).
+     */
+    public static function otp(
+        string $to,
+        string $templateName,
+        string $code,
+        string $language = 'en',
+        bool $includeCopyButton = true,
+        ?string $replyToMessageId = null,
+    ): array {
+        if (trim($code) === '') {
+            throw new ValidationException('OTP code cannot be empty.', 422);
+        }
+
+        $components = [
+            TemplateComponent::body([$code]),
+        ];
+
+        if ($includeCopyButton) {
+            $components[] = TemplateComponent::urlButton(0, $code);
+        }
+
+        return self::template($to, $templateName, $language, [], $components, $replyToMessageId);
+    }
+
+    /**
+     * Build an interactive Call-To-Action URL button message (e.g., Pay Invoice / View Order).
+     */
+    public static function interactiveCtaUrl(
+        string $to,
+        string $body,
+        string $displayText,
+        string $url,
+        ?string $header = null,
+        ?string $footer = null,
+        ?string $replyToMessageId = null,
+    ): array {
+        if (trim($body) === '') {
+            throw new ValidationException('CTA URL message body cannot be empty.', 422);
+        }
+
+        if (trim($displayText) === '' || mb_strlen($displayText) > 20) {
+            throw new ValidationException('CTA URL button display text must be between 1 and 20 characters.', 422);
+        }
+
+        if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+            throw new ValidationException("Invalid CTA URL '{$url}'.", 422);
+        }
+
+        $interactive = [
+            'type' => 'cta_url',
+            'body' => ['text' => $body],
+            'action' => [
+                'name' => 'cta_url',
+                'parameters' => [
+                    'display_text' => $displayText,
+                    'url' => $url,
+                ],
+            ],
+        ];
+
+        if ($header !== null && $header !== '') {
+            $interactive['header'] = ['type' => 'text', 'text' => $header];
+        }
+
+        if ($footer !== null && $footer !== '') {
+            $interactive['footer'] = ['text' => $footer];
+        }
+
+        return self::base($to, 'interactive', ['interactive' => $interactive], $replyToMessageId);
+    }
+
+    /**
+     * Build a WhatsApp Flows interactive message payload.
+     *
+     * @param  array<string, mixed>|null  $flowActionPayload
+     */
+    public static function flow(
+        string $to,
+        string $body,
+        string $flowId,
+        string $flowCta,
+        ?string $flowToken = null,
+        string $flowAction = 'navigate',
+        ?array $flowActionPayload = null,
+        string $mode = 'published',
+        ?string $header = null,
+        ?string $footer = null,
+        ?string $replyToMessageId = null,
+    ): array {
+        if (trim($flowId) === '' || trim($flowCta) === '') {
+            throw new ValidationException('WhatsApp Flow requires both flowId and flowCta.', 422);
+        }
+
+        $parameters = [
+            'flow_message_version' => '3',
+            'flow_id' => $flowId,
+            'flow_cta' => $flowCta,
+            'flow_action' => $flowAction,
+            'mode' => $mode,
+        ];
+
+        if ($flowToken !== null && $flowToken !== '') {
+            $parameters['flow_token'] = $flowToken;
+        }
+
+        if ($flowActionPayload !== null && $flowActionPayload !== []) {
+            $parameters['flow_action_payload'] = $flowActionPayload;
+        }
+
+        $interactive = [
+            'type' => 'flow',
+            'body' => ['text' => $body],
+            'action' => [
+                'name' => 'flow',
+                'parameters' => $parameters,
+            ],
+        ];
+
+        if ($header !== null && $header !== '') {
+            $interactive['header'] = ['type' => 'text', 'text' => $header];
+        }
+
+        if ($footer !== null && $footer !== '') {
+            $interactive['footer'] = ['text' => $footer];
+        }
+
+        return self::base($to, 'interactive', ['interactive' => $interactive], $replyToMessageId);
     }
 
     private static function base(string $to, string $type, array $extra, ?string $replyToMessageId = null): array

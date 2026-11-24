@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        $tableName = (string) config('whatsapp.database_logging.table', 'whatsapp_messages');
+
+        Schema::create($tableName, function (Blueprint $table): void {
+            $table->id();
+            $table->string('wamid')->nullable()->index();
+            $table->string('direction', 16)->index(); // outbound | inbound
+            $table->string('phone_number', 32)->index();
+            $table->string('phone_number_id', 64)->nullable()->index();
+            $table->string('type', 32)->default('text');
+            $table->string('template_name')->nullable()->index();
+            $table->string('status', 32)->default('sent')->index();
+            $table->string('pricing_category', 32)->nullable()->index();
+            $table->boolean('billable')->default(false);
+            $table->json('payload')->nullable();
+            $table->string('error_code', 32)->nullable();
+            $table->text('error_message')->nullable();
+            $table->timestamp('delivered_at')->nullable();
+            $table->timestamp('read_at')->nullable();
+            $table->timestamp('failed_at')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        $tableName = (string) config('whatsapp.database_logging.table', 'whatsapp_messages');
+
+        Schema::dropIfExists($tableName);
+    }
+};

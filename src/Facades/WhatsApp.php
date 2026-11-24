@@ -9,6 +9,7 @@ use LankaDev\WhatsApp\Client\ApiResponse;
 use LankaDev\WhatsApp\Client\WhatsAppClient;
 use LankaDev\WhatsApp\Media\MediaManager;
 use LankaDev\WhatsApp\PendingMessage;
+use LankaDev\WhatsApp\Support\ConversationWindow;
 use LankaDev\WhatsApp\Templates\TemplateManager;
 use LankaDev\WhatsApp\Testing\WhatsAppFake;
 use LankaDev\WhatsApp\WhatsAppManager;
@@ -19,6 +20,8 @@ use LankaDev\WhatsApp\WhatsAppManager;
  * @method static ApiResponse markAsRead(string $messageId, ?string $phoneNumberId = null)
  * @method static TemplateManager templates()
  * @method static MediaManager media()
+ * @method static ConversationWindow|null conversationWindow()
+ * @method static bool isWithinServiceWindow(string $phoneNumber)
  * @method static WhatsAppClient client()
  *
  * @see WhatsAppManager

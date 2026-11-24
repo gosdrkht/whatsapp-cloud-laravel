@@ -147,6 +147,75 @@ final class WhatsAppMessage
         );
     }
 
+    public static function otp(
+        string $templateName,
+        string $code,
+        string $language = 'en',
+        bool $includeCopyButton = true,
+    ): self {
+        return new self(
+            static fn (string $to, ?string $replyTo): array => MessagePayloadBuilder::otp(
+                $to,
+                $templateName,
+                $code,
+                $language,
+                $includeCopyButton,
+                $replyTo,
+            ),
+        );
+    }
+
+    public static function interactiveCtaUrl(
+        string $body,
+        string $displayText,
+        string $url,
+        ?string $header = null,
+        ?string $footer = null,
+    ): self {
+        return new self(
+            static fn (string $to, ?string $replyTo): array => MessagePayloadBuilder::interactiveCtaUrl(
+                $to,
+                $body,
+                $displayText,
+                $url,
+                $header,
+                $footer,
+                $replyTo,
+            ),
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $flowActionPayload
+     */
+    public static function flow(
+        string $body,
+        string $flowId,
+        string $flowCta,
+        ?string $flowToken = null,
+        string $flowAction = 'navigate',
+        ?array $flowActionPayload = null,
+        string $mode = 'published',
+        ?string $header = null,
+        ?string $footer = null,
+    ): self {
+        return new self(
+            static fn (string $to, ?string $replyTo): array => MessagePayloadBuilder::flow(
+                $to,
+                $body,
+                $flowId,
+                $flowCta,
+                $flowToken,
+                $flowAction,
+                $flowActionPayload,
+                $mode,
+                $header,
+                $footer,
+                $replyTo,
+            ),
+        );
+    }
+
     public function to(string $recipient): self
     {
         $this->recipient = $recipient;
