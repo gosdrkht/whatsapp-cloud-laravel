@@ -324,15 +324,16 @@ $whatsapp->to('94771234567')->sendText('Hello from standalone PHP!');
 
 ## Advanced Features & Recipes
 
-- **Local Phone Number Normalization**: Set `WHATSAPP_DEFAULT_COUNTRY_CODE=94` to accept local numbers like `0771234567`.
-- **OTP Authentication Helper**: `WhatsApp::to('0771234567')->sendOtp('login_otp', '482910')`.
+- **Local Phone Number Normalization & Validation**: Set `WHATSAPP_DEFAULT_COUNTRY_CODE=94` to accept local numbers like `0771234567`, and validate requests with `SriLankanMobileNumber` or `WhatsAppPhoneNumber`.
+- **OTP & LKR Helpers**: `WhatsApp::to('0771234567')->sendOtp('login_otp', '482910')`, `TemplateComponent::lkr(12500.50)`, and `TemplateComponent::colomboDateTime(now())`.
 - **Interactive CTA URL & WhatsApp Flows**: `sendInteractiveCtaUrl(...)`, `sendFlow(...)`, `sendSticker(...)`, and `WhatsApp::sendTypingIndicator($messageId)`.
 - **24-Hour Customer Service Window**: Check `WhatsApp::isWithinServiceWindow('94771234567')` (automatically updated on incoming webhooks).
 - **Opt-In Database Logging**: Publish migrations with `php artisan vendor:publish --tag="whatsapp-migrations"` and set `WHATSAPP_DATABASE_LOGGING=true` to persist outbound/inbound messages, delivery/read/failed timestamps, and Meta pricing categories in `whatsapp_messages`.
 - **Multi-Tenant SaaS**: Use `WhatsApp::using($credentials)` or bind `TenantCredentialResolver` and call `WhatsApp::forTenant($tenant)`.
 - **Rate-Paced Bulk Broadcasts**: Use `WhatsApp::broadcast($recipients, $payloadFactory, rateLimitPerSecond: 20)->dispatch()`.
+- **Notification Scaffolding**: `php artisan whatsapp:make-notification OrderConfirmationNotification --template=order_confirmation`.
 
-See [docs/recipes.md](docs/recipes.md) for copy-pasteable POS, Hospital, OTP, PayHere, Multi-Tenant, and Bulk Broadcast recipes.
+See [docs/recipes.md](docs/recipes.md) and [docs/sri-lanka-recipes.md](docs/sri-lanka-recipes.md) for copy-pasteable POS, COD Verification, Hospital, OTP, PayHere, SMS Fallback, Tri-Lingual (`en`/`si`/`ta`), Multi-Tenant, and Bulk Broadcast recipes.
 
 ---
 

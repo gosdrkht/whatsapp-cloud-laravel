@@ -4,6 +4,15 @@ All notable changes to `lankadev/whatsapp-cloud-laravel` will be documented in t
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-11-24
+
+### Added
+- Laravel validation rules: `SriLankanMobileNumber` (validating Sri Lankan mobile prefixes `070`–`078` and rejecting landlines) and `WhatsAppPhoneNumber`.
+- `TemplateComponent::lkr()` currency helper and `TemplateComponent::colomboDateTime()` (`Asia/Colombo`) helper.
+- `php artisan whatsapp:make-notification` Artisan command to scaffold queued WhatsApp notifications.
+- Step-by-step Meta Cloud API setup guide (`docs/meta-setup.md`).
+- Sri Lankan developer recipes & tri-lingual (`en`, `si`, `ta`) template guide (`docs/sri-lanka-recipes.md`), covering COD verification, DomPDF POS receipts, PayHere links, and local SMS fallback patterns.
+
 ## [1.1.0] - 2026-11-24
 
 ### Added

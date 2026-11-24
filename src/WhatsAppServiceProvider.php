@@ -15,6 +15,7 @@ use LankaDev\WhatsApp\Client\HttpClientInterface;
 use LankaDev\WhatsApp\Client\LaravelHttpClient;
 use LankaDev\WhatsApp\Client\WhatsAppClient;
 use LankaDev\WhatsApp\Client\WhatsAppConfig;
+use LankaDev\WhatsApp\Console\WhatsAppMakeNotificationCommand;
 use LankaDev\WhatsApp\Console\WhatsAppTemplatesCommand;
 use LankaDev\WhatsApp\Console\WhatsAppTestCommand;
 use LankaDev\WhatsApp\Console\WhatsAppWebhookCommand;
@@ -102,6 +103,7 @@ class WhatsAppServiceProvider extends ServiceProvider
                 WhatsAppTestCommand::class,
                 WhatsAppTemplatesCommand::class,
                 WhatsAppWebhookCommand::class,
+                WhatsAppMakeNotificationCommand::class,
             ]);
         }
 

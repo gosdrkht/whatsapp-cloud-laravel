@@ -135,6 +135,18 @@ final class TemplateComponent
         ];
     }
 
+    /**
+     * Convenience helper for Sri Lankan Rupees (LKR) currency parameters.
+     */
+    public static function lkr(float|int $amount): array
+    {
+        return self::currencyParameter(
+            fallbackValue: 'LKR ' . number_format((float) $amount, 2),
+            code: 'LKR',
+            amount1000: (int) round(((float) $amount) * 1000),
+        );
+    }
+
     public static function dateTimeParameter(string $fallbackValue): array
     {
         return [
@@ -143,6 +155,20 @@ final class TemplateComponent
                 'fallback_value' => $fallbackValue,
             ],
         ];
+    }
+
+    /**
+     * Convenience helper formatting a date/time in Asia/Colombo timezone for Meta date_time parameters.
+     */
+    public static function colomboDateTime(\DateTimeInterface|string $dateTime, string $format = 'Y-m-d h:i A'): array
+    {
+        $tz = new \DateTimeZone('Asia/Colombo');
+
+        $dt = $dateTime instanceof \DateTimeInterface
+            ? \DateTimeImmutable::createFromInterface($dateTime)->setTimezone($tz)
+            : new \DateTimeImmutable($dateTime, $tz);
+
+        return self::dateTimeParameter($dt->format($format));
     }
 
     public function toArray(): array
