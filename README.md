@@ -1,5 +1,12 @@
 # WhatsApp Cloud Laravel
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/lankadev/whatsapp-cloud-laravel.svg?style=flat-square)](https://packagist.org/packages/lankadev/whatsapp-cloud-laravel)
+[![Total Downloads](https://img.shields.io/packagist/dt/lankadev/whatsapp-cloud-laravel.svg?style=flat-square)](https://packagist.org/packages/lankadev/whatsapp-cloud-laravel)
+[![Tests](https://github.com/gosdrkht/whatsapp-cloud-laravel/actions/workflows/tests.yml/badge.svg)](https://github.com/gosdrkht/whatsapp-cloud-laravel/actions/workflows/tests.yml)
+[![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=flat-square&logo=php&logoColor=white)](https://www.php.net/)
+[![Laravel](https://img.shields.io/badge/Laravel-11%20%7C%2012%20%7C%2013-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com/)
+[![License](https://img.shields.io/packagist/l/lankadev/whatsapp-cloud-laravel.svg?style=flat-square)](LICENSE)
+
 **The simplest way to integrate WhatsApp Business Cloud API into Laravel applications.**
 
 Simple. Powerful. Developer-friendly.  
